@@ -1,4 +1,4 @@
-Id,ActivityDate,TotalSteps,TotalDistance,TrackerDistance,LoggedActivitiesDistance,VeryActiveDistance,ModeratelyActiveDistance,LightActiveDistance,SedentaryActiveDistance,VeryActiveMinutes,FairlyActiveMinutes,LightlyActiveMinutes,SedentaryMinutes,Calories
+Id,ActivityDateTime,TotalSteps,TotalDistance,TrackerDistance,LoggedActivitiesDistance,VeryActiveDistance,ModeratelyActiveDistance,LightActiveDistance,SedentaryActiveDistance,VeryActiveMinutes,FairlyActiveMinutes,LightlyActiveMinutes,SedentaryMinutes,Calories
 1503960366,3/25/2016,11004,7.1100001335144,7.1100001335144,0,2.5699999332428,0.46000000834465,4.07000017166138,0,33,12,205,804,1819
 1503960366,3/26/2016,17609,11.5500001907349,11.5500001907349,0,6.92000007629395,0.730000019073486,3.91000008583069,0,89,17,274,588,2154
 1503960366,3/27/2016,12736,8.52999973297119,8.52999973297119,0,4.65999984741211,0.159999996423721,3.71000003814697,0,56,5,268,605,1944

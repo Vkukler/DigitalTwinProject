@@ -1,4 +1,4 @@
-Id,ActivityHour,TotalIntensity,AverageIntensity
+Id,ActivityDateTime,TotalIntensity,AverageIntensity
 1503960366,3/12/2016 12:00:00 AM,0,0
 1503960366,3/12/2016 1:00:00 AM,0,0
 1503960366,3/12/2016 2:00:00 AM,0,0

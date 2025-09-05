@@ -1,4 +1,4 @@
-Id,Time,Value_mean,Value_sum,Value_max,Value_min
+Id,ActivityDateTime,Value_mean,Value_sum,Value_max,Value_min
 1503960366,2016-03-12 00:00:00,10.0,600,10,10
 1503960366,2016-03-12 01:00:00,10.0,600,10,10
 1503960366,2016-03-12 02:00:00,10.0,600,10,10
