@@ -80,7 +80,7 @@ def extract_user_data_and_save(input_dir, output_dir, user_id, start_date, end_d
 if __name__ == "__main__":
     extract_user_data_and_save(
         input_dir="../FitbitData/mturkfitbit_export_3.12.16-4.11.16/Fitabase Data 3.12.16-4.11.16",
-        output_dir="../activity_data_user_5577150313/",
+        output_dir="../src/data/",
         user_id=5577150313,
         start_date="2016-04-01",
         end_date="2025-04-10",

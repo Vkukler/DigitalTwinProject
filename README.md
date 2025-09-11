@@ -29,3 +29,41 @@ The dataset includes outputs from **physical activity, heart rate, and sleep mon
 - The dataset reflects **minute-level outputs** for some measures (e.g., Calories), **hourly data** for others (e.g., Steps), and **irregular sampling** for HeartRate.  
 - minute-level outputs for sleep quality can also be used for calculating the sleep duration per hour.  
 
+---
+### 2. Local Setup
+
+This project simulates a digital twin environment with a Producer (sending heartbeat & activity data) and a Consumer (receiving messages, analyzing data, and exposing REST APIs).
+The system uses RabbitMQ as the message broker.
+
+0. Prerequisites
+   * Python 3.9+
+   * Docker (for RabbitMQ)
+
+1. Install dependencies:
+    ```bash
+   pip install -r requirements.txt
+   ```
+   
+2. Start RabbitMQ (via Docker)
+
+    ```bash
+   docker-compose -p digital_twin -f docs/docker-compose.yml up
+   ```
+
+3. Running the Apps 
+* Open two terminals in the project root (src/ folder).
+  * Producer Service: Simulates heartbeat & activity data and publishes to RabbitMQ.
+  * Consumer Service: Consumes messages from RabbitMQ and exposes REST API endpoints.
+    
+  ``` bash
+    # start producer
+    python src/app_producer.py
+    
+    # start consumer
+    python src/app_consumer.py
+  ```
+
+
+4. Stopping Services
+* Stop RabbitMQ: <code>docker-compose -p digital_twin -f docs/docker-compose.yml down</code>
+* Stop Producer/Consumer: Ctrl + C in their terminal windows.
