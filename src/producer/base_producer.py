@@ -2,7 +2,7 @@ import threading
 import time
 import json
 from config import settings
-from .publisher import RabbitMQPublisher
+from producer.publisher import RabbitMQPublisher
 
 
 class BaseProducer:

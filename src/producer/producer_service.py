@@ -1,4 +1,4 @@
-from .base_producer import BaseProducer
+from producer.base_producer import BaseProducer
 from config import settings
 
 class ProducerService:
