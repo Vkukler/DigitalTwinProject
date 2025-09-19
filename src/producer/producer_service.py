@@ -8,8 +8,8 @@ class ProducerService:
         self.producers = []
 
         producer_configs = [
-            {"queue": settings.HEARTBEAT_QUEUE, "signal": "heart_rate",
-             "file": settings.HEARTRATE_CSV_PATH, "interval": settings.HEARTRATE_INTERVAL},
+            {"queue": settings.HEARTRATE_QUEUE, "signal": "heart_rate",
+             "file": settings.HEARTRATE_CSV_FILE_PATH, "interval": settings.HEARTRATE_INTERVAL},
             {"queue": settings.CALORIES_QUEUE, "signal": "calories",
              "file": settings.CALORIES_CSV_FILE_PATH, "interval": settings.CALORIES_INTERVAL},
         ]

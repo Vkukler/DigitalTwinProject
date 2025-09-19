@@ -24,7 +24,7 @@ class BaseProducer:
 
                         event = {
                             "device_id": self.user_id,
-                            "timestamp": int(timestamp_str),
+                            "timestamp": str(timestamp_str),
                             "type": self.event_type,        # measurement
                             "signal": self.signal_name,     # e.g. "calories"
                             "value": value

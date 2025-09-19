@@ -20,7 +20,7 @@ EXCHANGE = "activity_data_exchange"
 EXCHANGE_TYPE = "direct"
 
 # Queues for each producer
-HEARTRATE_QUEUE = "heartbeat_queue"
+HEARTRATE_QUEUE = "heartrate_queue"
 ACTIVITY_QUEUE = "activity_queue"
 CALORIES_QUEUE = "calories_queue"
 
