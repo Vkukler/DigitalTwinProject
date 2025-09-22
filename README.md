@@ -62,6 +62,14 @@ The system uses RabbitMQ as the message broker.
     # start consumer
     python src/app_consumer.py
   ```
+3. Delete previous data base 
+    
+  ``` docker -exec in influx
+ influxdb3 delete table \
+  --database sensors_data \
+  --token apiv3_ESchRDoBGzLLopqIGy5uQ25mIVL3fXzeuS9W2l9XJ-zQ3LJKppjJ1Scl5fNrrHZEvF9dZInf2g8rb6gPVomWrw \
+  table1
+  ```
 
 
 4. Stopping Services

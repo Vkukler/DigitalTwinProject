@@ -1,5 +1,18 @@
 import pika
+import json
 from config import settings
+from influxdb_client_3 import InfluxDBClient3, InfluxDBError, Point
+
+
+influxdb_host = settings.INFLUX_HOST
+influxdb_token = settings.INFLUX_TOKEN
+influxdb_database = settings.INFLUX_DATABASE
+
+client = InfluxDBClient3(
+    host=influxdb_host,
+    token=influxdb_token,
+    database=influxdb_database
+)
 
 
 class RabbitMQConsumer:
@@ -28,12 +41,29 @@ class RabbitMQConsumer:
             self.channel.queue_bind(exchange=settings.EXCHANGE,
                                     queue=queue,
                                     routing_key=queue)
+            
 
-        # callback setting
+        def make_callback(queue_name):
+            def callback(ch, method, properties, body):
+                data = json.loads(body)
+                point = (
+                    Point("table1")
+                    .tag("signal", data["signal"])
+                    .field("value", data["value"])
+                    .time(data["timestamp"])
+                )
+                try:
+                    client.write(point)
+                    print(f"Written to {queue_name}: {data}")
+                    ch.basic_ack(delivery_tag=method.delivery_tag)
+                except InfluxDBError as e:
+                    print(f"Error writing to InfluxDB: {e}")
+            return callback
+        
         for queue in settings.QUEUES:
             self.channel.basic_consume(
                 queue=queue,
-                on_message_callback=on_message,
+                on_message_callback=make_callback(queue),
                 auto_ack=False
             )
 

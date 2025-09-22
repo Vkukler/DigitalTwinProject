@@ -1,6 +1,20 @@
 version: "3.9"
 
 services:
+  influxdb3:
+    image: influxdb:3-core
+    container_name: influxdb3
+    ports:
+      - "8181:8181"
+    volumes:
+      - influxdb3-data:/var/lib/influxdb3
+    command:
+      - influxdb3
+      - serve
+      - --node-id=host01
+      - --object-store=file
+      - --data-dir=/var/lib/influxdb3
+
   rabbitmq:
     image: rabbitmq:3.12.9-management
     restart: always
@@ -19,6 +33,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    depends_on:
+      - influxdb3
+
 
   producer:
     build:
@@ -32,6 +49,23 @@ services:
       RABBITMQ_HOST: rabbitmq     # host = service name
     command: python src/app_producer.py
 
+
+  grafana:
+    image: grafana/grafana-enterprise
+    container_name: grafana
+    ports:
+      - "3000:3000"   
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+    depends_on:
+      - influxdb3
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+
 volumes:
+  influxdb3-data:
   rabbitmq-data:
   rabbitmq-log:
+  grafana-data:

@@ -4,6 +4,7 @@ from consumer.consumer import RabbitMQConsumer
 from consumer.model.representation_model import RepresentationModel
 from consumer.ai.ai_implementation import heart_rate_anomaly_detection
 
+
 class ConsumerService:
     def __init__(self, person="alice"):
         self.model = RepresentationModel(person)

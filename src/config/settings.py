@@ -15,6 +15,12 @@ RABBITMQ_PORT = 5672
 RABBITMQ_USER = "admin"
 RABBITMQ_PASSWORD = "admin"
 
+#InfluxDB_Setting
+INFLUX_HOST = "http://localhost:8181"
+INFLUX_TOKEN = "apiv3_ESchRDoBGzLLopqIGy5uQ25mIVL3fXzeuS9W2l9XJ-zQ3LJKppjJ1Scl5fNrrHZEvF9dZInf2g8rb6gPVomWrw"
+INFLUX_DATABASE = "sensors_data"
+
+
 # Exchange
 EXCHANGE = "activity_data_exchange"
 EXCHANGE_TYPE = "direct"
