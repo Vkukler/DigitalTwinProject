@@ -62,7 +62,7 @@ The system uses RabbitMQ as the message broker.
     # start consumer
     python src/app_consumer.py
   ```
-3. InfluxDB request examples in Docker exec
+3. InfluxDB request examples in Docker exec, please delete table1 after every compose up.
     
   ``` docker -exec in influx
  influxdb3 delete table \
