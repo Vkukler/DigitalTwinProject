@@ -72,7 +72,7 @@ class RabbitMQConsumer:
                     # set correct field type
                     if signal in ["heart_rate", "calories", "steps"]:
                         point = point.field("value", float(value))
-                    elif signal == ["sleep", "heart_rate_status", "intensities"]:
+                    elif signal in ["sleep", "heart_rate_status", "intensities"]:
                         point = point.field("value", int(value))
                     try:
                         client.write(point)
