@@ -52,27 +52,34 @@ class RabbitMQConsumer:
             def callback(ch, method, properties, body):
 
                 # apply state transition logic with on_message func
-                model_state = self.on_message(ch, method, properties, body)
+                events = self.on_message(ch, method, properties, body)
 
                 # data persistence with influxDB
-                point = (
-                    Point("health_statics")
-                    .tag("user_id", str(model_state["person"]))
-                    .field("calories", float(model_state["signals"]["calories"]))
-                    .field("steps", int(model_state["signals"]["steps"]))
-                    .field("sleep", int(model_state["signals"]["sleep"]))
-                    .field("heart_rate", float(model_state["signals"]["heart_rate"]))
-                    .field("heart_rate_status", str(model_state["signals"]["heart_rate_status"]))
-                    .field("intensities", int(model_state["signals"]["intensities"]))
-                    .field("past_time", str(model_state["timestamp"]))
-                    .time(datetime.datetime.utcnow())
-                )
-                try:
-                    client.write(point)
-                    print(f"Written to {queue_name}: {model_state}")
+                for event in events:
 
-                except InfluxDBError as e:
-                    print(f"Error writing to InfluxDB: {e}")
+                    signal = str(event["signal"])
+                    value = event["value"]
+
+                    point = (
+                        Point("health_statics")
+                        .tag("user_id", "user_5577150313")
+                        .tag("type", str(event["type"]))
+                        .tag("signal", signal)
+                        .field("past_time", event["timestamp"])
+                        .time(datetime.datetime.utcnow())
+                    )
+
+                    # set correct field type
+                    if signal in ["heart_rate", "calories", "steps"]:
+                        point = point.field("value", float(value))
+                    elif signal == ["sleep", "heart_rate_status", "intensities"]:
+                        point = point.field("value", int(value))
+                    try:
+                        client.write(point)
+                        print(f"Written to influxDB: {event}")
+
+                    except InfluxDBError as e:
+                        print(f"Error writing to InfluxDB: {e}")
             return callback
         
         for queue in settings.QUEUES:

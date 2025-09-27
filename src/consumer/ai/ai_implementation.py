@@ -11,6 +11,6 @@ def heart_rate_anomaly_detection(event):
                 timestamp=event["timestamp"],
                 type = "ai",
                 signal = "heart_rate_status",
-                value = "abnormal",
+                value = 1, # 0 normal, 1 abnormal
             ).to_dict();
     return event

@@ -7,7 +7,7 @@ from consumer.ai.ai_implementation import heart_rate_anomaly_detection
 
 class ConsumerService:
     def __init__(self, person="user_5577150313"):
-        self.model = RepresentationModel(person)
+        # self.model = RepresentationModel(person)
         self.lock = threading.Lock()
 
     def start(self):
@@ -19,11 +19,11 @@ class ConsumerService:
         raw_event = json.loads(body)
         events_to_apply = self._process_event(raw_event)
 
-        with self.lock:
-            self.model.update(events_to_apply)
+        # with self.lock:
+        #     self.model.update(events_to_apply)
 
-        print(f" [v] Updated state: {self.model.to_dict()}")
-        return self.model.to_dict()
+        # print(f" [v] Updated state: {self.model.to_dict()}")
+        return events_to_apply
 
     def _process_event(self, raw_event):
         # Start with the incoming raw event
