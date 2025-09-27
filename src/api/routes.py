@@ -23,6 +23,10 @@ def create_api(consumer_service):
         with consumer_service.lock:
             return jsonify({"total_steps": consumer_service.total_steps})
 
+    @app.route("/state", methods=["GET"])
+    def get_state():
+        return jsonify(consumer_service.model.to_dict())
+
 
 
     return app

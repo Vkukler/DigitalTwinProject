@@ -1,6 +1,38 @@
 version: "3.9"
 
 services:
+#  influxdb3:
+#    image: influxdb:3-core
+#    container_name: influxdb3
+#    ports:
+#      - "8181:8181"
+#    volumes:
+#      - influxdb3-data:/var/lib/influxdb3
+#    command:
+#      - influxdb3
+#      - serve
+#      - --node-id=host01
+#      - --object-store=file
+#      - --data-dir=/var/lib/influxdb3
+#      - --auth-enabled
+  influxdb:
+    image: influxdb:2.7
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      - ./influx/influxdb2-data:/var/lib/influxdb2
+      - ./influx/influxdb2-config:/etc/influxdb2
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: admin123
+      DOCKER_INFLUXDB_INIT_ORG: my-org
+      DOCKER_INFLUXDB_INIT_BUCKET: health_db
+      DOCKER_INFLUXDB_INIT_RETENTION: 0
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: my-super-secret-token
+
+
   rabbitmq:
     image: rabbitmq:3.12.9-management
     restart: always
@@ -14,7 +46,46 @@ services:
     volumes:
       - ./rabbitmq/data:/var/lib/rabbitmq
       - ./rabbitmq/log:/var/log/rabbitmq
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      - influxdb
+
+
+  producer:
+    build:
+      context: ..
+      dockerfile: docs/Dockerfile
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_healthy   # wait until rabbitmq is running
+    environment:
+      RABBITMQ_HOST: rabbitmq     # host = service name
+    command: python src/app_producer.py
+
+
+  grafana:
+    image: grafana/grafana-enterprise
+    container_name: grafana
+    ports:
+      - "3000:3000"   
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+    depends_on:
+      - influxdb
+    volumes:
+      - ./grafana/grafana-data:/var/lib/grafana
+      - ./grafana/grafana-provisioning:/etc/grafana/provisioning
+      - - ./grafana/dashboards:/var/lib/grafana/dashboards
+
 
 volumes:
+  influxdb3-data:
   rabbitmq-data:
   rabbitmq-log:
+  grafana-data:

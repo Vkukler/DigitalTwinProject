@@ -1,52 +1,38 @@
 import json
 import threading
 from consumer.consumer import RabbitMQConsumer
+from consumer.model.representation_model import RepresentationModel
+from consumer.ai.ai_implementation import heart_rate_anomaly_detection
+
 
 class ConsumerService:
-    def __init__(self):
-        self.latest_heartbeat = {"heartbeat": 0}
-        self.total_steps = 0
+    def __init__(self, person="user_5577150313"):
+        # self.model = RepresentationModel(person)
         self.lock = threading.Lock()
 
-        # extra storage for analysis
-        self.heartbeat_history = []
-        self.max_history_size = 50
-        self.alerts = []
-
     def start(self):
-        consumer = RabbitMQConsumer(
-            self._heartbeat_callback,
-            self._activity_callback
-        )
+        consumer = RabbitMQConsumer(self._on_message)
         thread = threading.Thread(target=consumer.start, daemon=True)
         thread.start()
 
-    def _heartbeat_callback(self, ch, method, properties, body):
-        # parse the message
-        data = json.loads(body)
+    def _on_message(self, ch, method, properties, body):
+        raw_event = json.loads(body)
+        events_to_apply = self._process_event(raw_event)
 
-        with self.lock:
-            self.latest_heartbeat = data
+        # with self.lock:
+        #     self.model.update(events_to_apply)
 
-            # dummy heartbeat analysis process
-            # keep history (fixed window size)
-            hb = data.get("heartbeat", 0)
-            self.heartbeat_history.append(hb)
-            if len(self.heartbeat_history) > self.max_history_size:
-                self.heartbeat_history.pop(0)
+        # print(f" [v] Updated state: {self.model.to_dict()}")
+        return events_to_apply
 
-            # simple anomaly detection
-            if hb > 120 or hb < 50:
-                self.alerts.append(
-                    {"msg": f"Abnormal heartbeat detected: {hb}", "timestamp": data.get("timestamp")}
-                )
+    def _process_event(self, raw_event):
+        # Start with the incoming raw event
+        events = [raw_event]
 
-        print(f" [v] Received Heartbeat: {data}")
-        ch.basic_ack(delivery_tag=method.delivery_tag)
+        # If the event is a measurement(from rabbitMq), check if extra processing is needed
+        if raw_event["type"] == "measurement":
+            if raw_event["signal"] == "heart_rate":
+                derived_event = heart_rate_anomaly_detection(raw_event)
+                events.append(derived_event)
 
-    def _activity_callback(self, ch, method, properties, body):
-        data = json.loads(body)
-        with self.lock:
-            self.total_steps += data.get("steps", 0)
-        print(f" [v] Received Activity: {data}, Total Steps: {self.total_steps}")
-        ch.basic_ack(delivery_tag=method.delivery_tag)
+        return events

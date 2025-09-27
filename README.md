@@ -44,7 +44,7 @@ The system uses RabbitMQ as the message broker.
    pip install -r requirements.txt
    ```
    
-2. Start RabbitMQ (via Docker)
+2. Start Producer container, RabbitMQ, influxDB, and Grafana client (via Docker)
 
     ```bash
    docker-compose -p digital_twin -f docs/docker-compose.yml up
@@ -52,13 +52,9 @@ The system uses RabbitMQ as the message broker.
 
 3. Running the Apps 
 * Open two terminals in the project root (src/ folder).
-  * Producer Service: Simulates heartbeat & activity data and publishes to RabbitMQ.
   * Consumer Service: Consumes messages from RabbitMQ and exposes REST API endpoints.
     
   ``` bash
-    # start producer
-    python src/app_producer.py
-    
     # start consumer
     python src/app_consumer.py
   ```
@@ -67,3 +63,33 @@ The system uses RabbitMQ as the message broker.
 4. Stopping Services
 * Stop RabbitMQ: <code>docker-compose -p digital_twin -f docs/docker-compose.yml down</code>
 * Stop Producer/Consumer: Ctrl + C in their terminal windows.
+
+---
+### 3. InfluxDB Schema
+Measurement: "Health_statics"
+
+| **Field/Tag** | **Type**    | **Description**                                  | **Example**                                                                                                                                                 |
+| ------------- | ----------- |--------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Tags**      |             |                                                  |                                                                                                                                                             |
+| `user_id`     | string      | Unique user identifier                           | `"user_5577150313"`                                                                                                                                         |
+| `type`        | string      | Data collection or AI implementation result      | `"measurement"`, `"ai"`                                                                                                                                     |
+| `signal`      | string      | Type of signal                                   | `"heart_rate"`, `"calories"`, `"steps"`, `"sleep"`, `"heart_rate_status"`, `"intensities"`                                                                  |
+| **Fields**    |             |                                                  |                                                                                                                                                             |
+| `past_time`   | int (epoch) | Original event timestamp                         | `1459468810`                                                                                                                                                |
+| `value`       | float / int | Signal value (numeric), type depends on `signal` | heart_rate: `55.0` (float); calories: `1.41` (float); steps: `10` (int); sleep: `1` (int); heart_rate_status: `0` / `1` / `2` (int); intensities: `3` (int) |
+| **Timestamp** |             |                                                  |                                                                                                                                                             |
+| `_time`       | timestamp   | InfluxDB write time (`.time(datetime.utcnow())`) | `2025-09-27T13:00:00Z`                                                                                                                                      |
+
+📌 Notes
+
+0. The 'type' tag:
+   * 'measurement' refers to the data from producer. 
+   * 'ai' refers to the ai implementation results.  
+
+1. The 'signal' tag differentiates which sensor metric is being recorded.
+
+2. Type of value:
+* float → heart_rate, calories
+* int → steps, sleep, heart_rate_status (0/1/2, stands for different types of abnormality), intensities
+
+3. past_time preserves the original event time, while _time is the actual write timestamp managed by InfluxDB.

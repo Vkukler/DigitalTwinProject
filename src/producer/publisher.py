@@ -1,16 +1,20 @@
 import pika
 import json
+import os
 from config import settings
 
 class RabbitMQPublisher:
-    def __init__(self):
+    def __init__(self, queue_name:str):
+
+        self.queue_name = queue_name
+
         credentials = pika.PlainCredentials(
             username=settings.RABBITMQ_USER,
             password=settings.RABBITMQ_PASSWORD
         )
 
         self.connection = pika.BlockingConnection(
-            pika.ConnectionParameters(settings.RABBITMQ_HOST,
+            pika.ConnectionParameters(os.getenv("RABBITMQ_HOST", "rabbitmq"), # settings.RABBITMQ_HOST
                                       port = settings.RABBITMQ_PORT,
                                       credentials = credentials
                                       )
@@ -19,22 +23,22 @@ class RabbitMQPublisher:
 
         # declare the exchange and queues
         self.channel.exchange_declare(exchange=settings.EXCHANGE, exchange_type= settings.EXCHANGE_TYPE)
-        self.channel.queue_declare(queue=settings.HEARTBEAT_QUEUE, durable=True)
-        self.channel.queue_declare(queue=settings.ACTIVITY_QUEUE, durable=True)
+        self.channel.queue_declare(queue = self.queue_name, durable=True)
 
         # bind the queue to exchange
-        self.channel.queue_bind(exchange=settings.EXCHANGE, queue=settings.HEARTBEAT_QUEUE, routing_key=settings.HEARTBEAT_QUEUE)
-        self.channel.queue_bind(exchange=settings.EXCHANGE, queue=settings.ACTIVITY_QUEUE, routing_key=settings.ACTIVITY_QUEUE)
+        self.channel.queue_bind(exchange=settings.EXCHANGE, queue= queue_name,
+                                    routing_key = self.queue_name)
 
-    def publish(self, queue_name: str, message: dict):
+
+    def publish(self, message: dict):
         """publish message to specified queue"""
         self.channel.basic_publish(
             exchange= settings.EXCHANGE,
-            routing_key=queue_name,
+            routing_key= self.queue_name,
             body=json.dumps(message),
-            properties=pika.BasicProperties(delivery_mode=2),  # 消息持久化
+            properties=pika.BasicProperties(delivery_mode=2),  # message persistence
         )
-        print(f" [x] Sent to {queue_name}: {message}")
+        print(f" [x] Sent to {self.queue_name}: {message}")
 
     def close(self):
         self.connection.close()

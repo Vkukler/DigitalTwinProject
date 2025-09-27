@@ -7,4 +7,4 @@ if __name__ == "__main__":
     consumer_service.start()
 
     app = create_api(consumer_service)
-    app.run(port=settings.FLASK_PORT, debug=True, use_reloader=False)
+    app.run(port=settings.FLASK_PORT, debug=False, use_reloader=False)
