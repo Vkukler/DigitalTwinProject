@@ -44,7 +44,7 @@ The system uses RabbitMQ as the message broker.
    pip install -r requirements.txt
    ```
    
-2. Start RabbitMQ (via Docker)
+2. Start Producer container, RabbitMQ, influxDB, and Grafana client (via Docker)
 
     ```bash
    docker-compose -p digital_twin -f docs/docker-compose.yml up
@@ -52,42 +52,12 @@ The system uses RabbitMQ as the message broker.
 
 3. Running the Apps 
 * Open two terminals in the project root (src/ folder).
-  * Producer Service: Simulates heartbeat & activity data and publishes to RabbitMQ.
   * Consumer Service: Consumes messages from RabbitMQ and exposes REST API endpoints.
     
   ``` bash
-    # start producer
-    python src/app_producer.py
-    
     # start consumer
     python src/app_consumer.py
   ```
-3. InfluxDB request examples in Docker exec, please delete table1 after every compose up.
-    
-  ``` docker -exec in influx
- influxdb3 delete table \
-  --database sensors_data \
-  --token apiv3_ESchRDoBGzLLopqIGy5uQ25mIVL3fXzeuS9W2l9XJ-zQ3LJKppjJ1Scl5fNrrHZEvF9dZInf2g8rb6gPVomWrw \
-  table1
-
-  influxdb3 query \
-  --database sensors_data \
-  --token apiv3_ESchRDoBGzLLopqIGy5uQ25mIVL3fXzeuS9W2l9XJ-zQ3LJKppjJ1Scl5fNrrHZEvF9dZInf2g8rb6gPVomWrw  \
-  "SHOW TABLES"
-
-
-  influxdb3 query \
-  --token apiv3_ESchRDoBGzLLopqIGy5uQ25mIVL3fXzeuS9W2l9XJ-zQ3LJKppjJ1Scl5fNrrHZEvF9dZInf2g8rb6gPVomWrw   \
-  --database sensors_data \
-  "SELECT * FROM table1"
-
-  influxdb3 query \
-  --token apiv3_ESchRDoBGzLLopqIGy5uQ25mIVL3fXzeuS9W2l9XJ-zQ3LJKppjJ1Scl5fNrrHZEvF9dZInf2g8rb6gPVomWrw   \
-  --database sensors_data \
-  "SELECT * FROM table1 ORDER BY time DESC"
-``` 
-
-
 
 
 4. Stopping Services
