@@ -1,5 +1,5 @@
 import json
-
+import datetime
 
 class RepresentationModel:
     def __init__(self, person: str):
@@ -17,10 +17,14 @@ class RepresentationModel:
 
     def update(self, events: list[dict]):
         """Apply transition rules based on a list of events"""
-        if len(events)==2:
-            print(events[1])
+
         for event in events:
-            self.timestamp = event.get("timestamp")
+            event_ts = datetime.datetime.strptime(event.get("timestamp"), "%Y-%m-%d %H:%M:%S")
+
+            # keep the latest timestamp
+            if self.timestamp is None or event_ts >= self.timestamp:
+                self.timestamp = event_ts
+
 
             if event["type"] == "measurement":
                 self.signals[event["signal"]] = event["value"]
@@ -31,7 +35,7 @@ class RepresentationModel:
 
     def to_dict(self):
         return {
-            "timestamp": self.timestamp,
+            "timestamp": self.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
             "person": self.person,
             "signals": self.signals
         }

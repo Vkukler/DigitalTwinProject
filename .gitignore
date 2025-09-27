@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyc
 
 # --- Virtual environments ---
 venv/
@@ -19,6 +20,8 @@ dist/
 
 # --- RabbitMQ runtime data ---
 docs/rabbitmq/
+docs/grafana
+docs/influx
 
 # --- Flink state/checkpoints ---
 flink-checkpoints/

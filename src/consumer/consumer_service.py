@@ -6,7 +6,7 @@ from consumer.ai.ai_implementation import heart_rate_anomaly_detection
 
 
 class ConsumerService:
-    def __init__(self, person="alice"):
+    def __init__(self, person="user_5577150313"):
         self.model = RepresentationModel(person)
         self.lock = threading.Lock()
 
@@ -23,11 +23,13 @@ class ConsumerService:
             self.model.update(events_to_apply)
 
         print(f" [v] Updated state: {self.model.to_dict()}")
-        ch.basic_ack(delivery_tag=method.delivery_tag)
+        return self.model.to_dict()
 
     def _process_event(self, raw_event):
-
+        # Start with the incoming raw event
         events = [raw_event]
+
+        # If the event is a measurement(from rabbitMq), check if extra processing is needed
         if raw_event["type"] == "measurement":
             if raw_event["signal"] == "heart_rate":
                 derived_event = heart_rate_anomaly_detection(raw_event)

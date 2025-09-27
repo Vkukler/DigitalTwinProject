@@ -16,9 +16,10 @@ RABBITMQ_USER = "admin"
 RABBITMQ_PASSWORD = "admin"
 
 #InfluxDB_Setting
-INFLUX_HOST = "http://localhost:8181"
-INFLUX_TOKEN = "apiv3_ESchRDoBGzLLopqIGy5uQ25mIVL3fXzeuS9W2l9XJ-zQ3LJKppjJ1Scl5fNrrHZEvF9dZInf2g8rb6gPVomWrw"
-INFLUX_DATABASE = "sensors_data"
+INFLUX_HOST = "http://127.0.0.1:8086"
+INFLUX_TOKEN = "my-super-secret-token"
+INFLUX_DATABASE = "health_db"
+INFLUX_ORG = "my-org"
 
 
 # Exchange
