@@ -73,7 +73,7 @@ class RabbitMQConsumer:
                     if signal in ["heart_rate", "calories", "steps"]:
                         point = point.field("value", float(value))
                     elif signal in ["sleep", "heart_rate_status", "intensities"]:
-                        point = point.field("value", int(value))
+                        point = point.field("int_value", int(value))
                     try:
                         client.write(point)
                         print(f"Written to influxDB: {event}")

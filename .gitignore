@@ -20,8 +20,10 @@ dist/
 
 # --- RabbitMQ runtime data ---
 docs/rabbitmq/
-docs/grafana
 docs/influx
+
+docs/grafana/grafana-data
+docs/grafana.ini
 
 # --- Flink state/checkpoints ---
 flink-checkpoints/
