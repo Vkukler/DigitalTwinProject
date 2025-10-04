@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent   # root_dir
 HEARTRATE_CSV_FILE_PATH = BASE_DIR / "data" / "user_5577150313_heartrate_seconds_preprocessed.csv"
 CALORIES_CSV_FILE_PATH = BASE_DIR / "data" / "user_5577150313_minuteCaloriesNarrow_merged.csv"
 STEPS_CSV_FILE_PATH = BASE_DIR / "data" / "user_5577150313_minuteStepsNarrow_merged.csv"
-SLEEP_CSV_FILE_PATH = BASE_DIR / "data" / "user_5577150313_minuteSleep_merged.csv"
+SLEEP_CSV_FILE_PATH = BASE_DIR / "data" / "user_5577150313_minuteSleep_preprocessed.csv"
 INTENSITIES_CSV_FILE_PATH = BASE_DIR / "data" / "user_5577150313_minuteIntensitiesNarrow_merged.csv"
 
 # RabbitMq_Setting

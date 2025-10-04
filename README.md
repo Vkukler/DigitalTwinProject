@@ -59,6 +59,14 @@ The system uses RabbitMQ as the message broker.
     python src/app_consumer.py
   ```
 
+4. open the grafana dashboard
+    * http://localhost:3000
+    * enter the username: admin and the password: admin123 (case sensitive)
+    * get into the Fitbit dashboard 
+    * choose the latest time frame
+   
+   <img src="figure/dashboard.png" alt="dashboard" width="400"/>
+   
 
 4. Stopping Services
 * Stop RabbitMQ: <code>docker-compose -p digital_twin -f docs/docker-compose.yml down</code>
@@ -68,17 +76,18 @@ The system uses RabbitMQ as the message broker.
 ### 3. InfluxDB Schema
 Measurement: "Health_statics"
 
-| **Field/Tag** | **Type**    | **Description**                                  | **Example**                                                                                                                                                 |
-| ------------- | ----------- |--------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Tags**      |             |                                                  |                                                                                                                                                             |
-| `user_id`     | string      | Unique user identifier                           | `"user_5577150313"`                                                                                                                                         |
-| `type`        | string      | Data collection or AI implementation result      | `"measurement"`, `"ai"`                                                                                                                                     |
-| `signal`      | string      | Type of signal                                   | `"heart_rate"`, `"calories"`, `"steps"`, `"sleep"`, `"heart_rate_status"`, `"intensities"`                                                                  |
-| **Fields**    |             |                                                  |                                                                                                                                                             |
-| `past_time`   | int (epoch) | Original event timestamp                         | `1459468810`                                                                                                                                                |
-| `value`       | float / int | Signal value (numeric), type depends on `signal` | heart_rate: `55.0` (float); calories: `1.41` (float); steps: `10` (int); sleep: `1` (int); heart_rate_status: `0` / `1` / `2` (int); intensities: `3` (int) |
-| **Timestamp** |             |                                                  |                                                                                                                                                             |
-| `_time`       | timestamp   | InfluxDB write time (`.time(datetime.utcnow())`) | `2025-09-27T13:00:00Z`                                                                                                                                      |
+| **Field/Tag** | **Type**    | **Description**                                  | **Example**                                                                               |
+|---------------|-------------|--------------------------------------------------|-------------------------------------------------------------------------------------------|
+| **Tags**      |             |                                                  |                                                                                           |
+| `user_id`     | string      | Unique user identifier                           | `"user_5577150313"`                                                                       |
+| `type`        | string      | Data collection or AI implementation result      | `"measurement"`, `"ai"`                                                                   |
+| `signal`      | string      | Type of signal                                   | `"heart_rate"`, `"calories"`, `"steps"`, `"sleep"`, `"heart_rate_status"`, `"intensities"` |
+| **Fields**    |             |                                                  |                                                                                           |
+| `past_time`   | int (epoch) | Original event timestamp                         | `1459468810`                                                                              |
+| `value`       | float       | Signal value (numeric), type depends on `signal` | heart_rate: `55.0` (float); calories: `1.41` (float); steps: `10` (float);                |
+| `int_value`   | int         |                                                  | sleep: `1` (int); heart_rate_status: `0` / `1` / `2` (int); intensities: `3` (int)        |
+| **Timestamp** |             |                                                  |                                                                                           |
+| `_time`       | timestamp   | InfluxDB write time (`.time(datetime.utcnow())`) | `2025-09-27T13:00:00Z`                                                                    |
 
 📌 Notes
 

@@ -23,4 +23,4 @@ providers:
     editable: true
     updateIntervalSeconds: 5
     options:
-      path: /var/lib/grafana/dashboards
+      path: /var/lib/grafana/dashboards/fitbit_stats.json
