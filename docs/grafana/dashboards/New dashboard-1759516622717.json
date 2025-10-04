@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 6,
   "links": [],
   "liveNow": true,
   "panels": [
@@ -73,7 +73,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "12.1.1",
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "query": "from(bucket: \"health_db\")\n  |> range(start: 0)\n  |> filter(fn: (r) => r[\"signal\"] == \"heart_rate\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n",
@@ -132,6 +132,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
+            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -236,7 +237,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.1.1",
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "datasource": {
@@ -306,7 +307,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "12.1.1",
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "query": "from(bucket: \"health_db\")\n  |> range(start: 0)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"health_statics\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> filter(fn: (r) => r[\"signal\"] == \"steps\")\n  |> aggregateWindow(every: 1d, fn: sum, createEmpty: false)\n  |> yield(name: \"sum\")",
@@ -378,7 +379,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.1.1",
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "query": "from(bucket: \"health_db\")\n  |> range(start: 0)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"health_statics\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> filter(fn: (r) => r[\"signal\"] == \"calories\")\n  |> aggregateWindow(every: 1d, fn: sum, createEmpty: false)\n  |> yield(name: \"sum\")",
@@ -427,6 +428,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
+            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -503,7 +505,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.1.1",
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "datasource": {
@@ -568,7 +570,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.1.1",
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "query": "from(bucket: \"health_db\")\n  |> range(start: 0)\n  |> filter(fn: (r) => r[\"signal\"] == \"sleep\")\n  |> aggregateWindow(\n    every: 1d,\n    fn: count,\n    createEmpty: false\n  )\n  |> group()\n  |> map(fn: (r) => ({\n      \"Date\": r._time,\n      \"Total Minutes\": r._value,\n      \"Sleep Duration\": \"${string(v: int(v: float(v: r._value) / 60.0))}h ${string(v: int(v: float(v: r._value) % 60.0))}m\"\n  }))\n",
@@ -627,7 +629,20 @@
           },
           "unit": "m"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Date"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "time:YYYY-MM-DD"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 10,
@@ -662,7 +677,7 @@
         "xTickLabelRotation": 0,
         "xTickLabelSpacing": 0
       },
-      "pluginVersion": "12.1.1",
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "query": " from(bucket: \"health_db\")\n  |> range(start: 0)\n  |> filter(fn: (r) => r[\"signal\"] == \"sleep\")\n  |> aggregateWindow(\n    every: 1d,\n    fn: count,\n    createEmpty: false\n  )\n  |> group()\n  |> map(fn: (r) => ({\n      \"Date\": r._time,\n      \"Total Minutes\": r._value,\n      \"Sleep Duration\": \"${string(v: int(v: float(v: r._value) / 60.0))}h ${string(v: int(v: float(v: r._value) % 60.0))}m\"\n  }))\n",
@@ -792,7 +807,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.1.1",
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "query": "from(bucket: \"health_db\")\n  |> range(start: 0)\n  |> filter(fn: (r) => r.signal == \"heart_rate\")\n  |> filter(fn: (r) => r._field == \"value\")\n",
@@ -848,7 +863,20 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "time:YYYY-MM-DD"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -884,7 +912,7 @@
         "xTickLabelRotation": 0,
         "xTickLabelSpacing": 0
       },
-      "pluginVersion": "12.1.1",
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "query": "from(bucket: \"health_db\")\n  |> range(start: 0)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"health_statics\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> filter(fn: (r) => r[\"signal\"] == \"steps\")\n  |> aggregateWindow(every: 1d, fn: sum, createEmpty: false)\n  ",
@@ -972,7 +1000,7 @@
         "xTickLabelRotation": 0,
         "xTickLabelSpacing": 0
       },
-      "pluginVersion": "12.1.1",
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "query": "from(bucket: \"health_db\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"health_statics\")\n  |> filter(fn: (r) => r[\"_field\"] == \"int_value\")\n  |> filter(fn: (r) => r[\"signal\"] == \"intensities\")\n  |> filter(fn: (r) => r[\"type\"] == \"measurement\")\n  |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
@@ -1037,6 +1065,18 @@
                 "value": "kcal"
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "time:YYYY-MM-DD"
+              }
+            ]
           }
         ]
       },
@@ -1072,7 +1112,7 @@
         "xTickLabelRotation": 0,
         "xTickLabelSpacing": 0
       },
-      "pluginVersion": "12.1.1",
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "query": "from(bucket: \"health_db\")\n  |> range(start: 0)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"health_statics\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> filter(fn: (r) => r[\"signal\"] == \"calories\")\n  |> aggregateWindow(every: 1d, fn: sum, createEmpty: false)\n  |> yield(name: \"sum\")",
@@ -1086,7 +1126,7 @@
   ],
   "preload": false,
   "refresh": "5s",
-  "schemaVersion": 41,
+  "schemaVersion": 42,
   "tags": [],
   "templating": {
     "list": []
@@ -1099,5 +1139,5 @@
   "timezone": "browser",
   "title": "New dashboard",
   "uid": "321bc0c3-37b9-43f4-8dd8-e9513e20ee2d",
-  "version": 123
+  "version": 2
 }
