@@ -6,6 +6,13 @@ from producer.publisher import RabbitMQPublisher
 
 
 class BaseProducer:
+    """
+        Abstract base producer bound to one queue.
+        Defines methods for:
+        - Reading data
+        - Encoding data
+        - Publishing messages
+    """
     def __init__(self, *, queue_name, signal_name, csv_file_path, interval, user_id=None, event_type="measurement"):
         self.queue_name = queue_name
         self.signal_name = signal_name

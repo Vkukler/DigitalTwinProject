@@ -2,6 +2,10 @@ from producer.base_producer import BaseProducer
 from config import settings
 
 class ProducerService:
+    """
+        Configures all producers and manages producer threads.
+        Responsible for initializing and starting producer loops.
+    """
     def __init__(self):
         self.producers = []
 

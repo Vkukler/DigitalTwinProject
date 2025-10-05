@@ -30,7 +30,28 @@ The dataset includes outputs from **physical activity, heart rate, and sleep mon
 - minute-level outputs for sleep quality can also be used for calculating the sleep duration per hour.  
 
 ---
-### 2. Local Setup
+### 2. System Architecture Overview
+<img src="figure/sequence_diagram.png" alt="dashboard" width="800"/>
+
+#### 2.1 Producer(replay app)
+The producer module follows a layered design to separate RabbitMQ setup, data handling, and producer orchestration.
+ 1. RabbitMQPublisher: Handles all low-level RabbitMQ setup and connectivity, including: 
+    - Declaring exchanges and queues
+    - Binding queues to exchanges
+    - Managing the channel and connection lifecycle
+ 2. BaseProducer: Provides a reusable template for producers bound to a specific queue. Defines how to:
+    - Read or generate data
+    - Encode the data (e.g., JSON)
+    - Publish messages to the corresponding queue
+ 3. ProducerService: Configures and manages all producers.Responsible for:
+    - Initializing each producer
+    - Starting producer threads or async tasks
+    - Supervising producer execution
+#### 2.2 Consumer
+
+ 
+---
+### 3. Local Setup
 
 This project simulates a digital twin environment with a Producer (sending heartbeat & activity data) and a Consumer (receiving messages, analyzing data, and exposing REST APIs).
 The system uses RabbitMQ as the message broker.
@@ -73,7 +94,7 @@ The system uses RabbitMQ as the message broker.
 * Stop Producer/Consumer: Ctrl + C in their terminal windows.
 
 ---
-### 3. InfluxDB Schema
+### 4. InfluxDB Schema
 Measurement: "Health_statics"
 
 | **Field/Tag** | **Type**    | **Description**                                  | **Example**                                                                               |

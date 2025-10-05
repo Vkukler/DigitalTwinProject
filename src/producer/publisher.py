@@ -4,6 +4,12 @@ import os
 from config import settings
 
 class RabbitMQPublisher:
+    """
+    Handles low-level RabbitMQ setup:
+    - Declares exchanges and queues
+    - Binds queues
+    - Manages connections and publishing
+    """
     def __init__(self, queue_name:str):
 
         self.queue_name = queue_name
