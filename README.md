@@ -123,3 +123,32 @@ Measurement: "Health_statics"
 * int → steps, sleep, heart_rate_status (0/1/2, stands for different types of abnormality), intensities
 
 3. past_time preserves the original event time, while _time is the actual write timestamp managed by InfluxDB.
+
+---
+
+### 5. Heart Rate Anomaly Types Summary
+
+| **Anomaly Type** | **Description** | **Detection Logic** | **Severity** | **Typical Cause / Context** | **Alert Color** |
+|------------------|-----------------|---------------------|---------------|------------------------------|----------------|
+| **Tachycardia** | Sustained high heart rate | `heart_rate > 110 bpm` for ≥ 30 seconds | 🔴 High | Intense activity, stress, fever, or cardiovascular strain | Red |
+| **Bradycardia** | Sustained low heart rate | `heart_rate < 50 bpm` for ≥ 30 seconds | 🔵 High | Deep rest, athletic conditioning, or conduction abnormality | Blue |
+| **Spike** | Sudden short-term increase in heart rate | ΔHR > threshold within 5–10 seconds | 🟠 Medium | Rapid movement, emotional shock, or sensor noise | Orange |
+| **Drop** | Sudden short-term decrease in heart rate | ΔHR < −threshold within 5–10 seconds | 🟣 Medium | Rest transition, signal interruption, or poor contact | Purple |
+| **Variability Anomaly** | Heart rate deviates significantly from recent baseline | `|z| > 3` over a 5-minute sliding window (MAD-based z-score) | 🟡 Low | Normal physiological fluctuation or measurement drift | Yellow |
+
+
+**Notes:**
+- `z` represents a robust z-score based on the median and MAD (Median Absolute Deviation).  
+- Persistent anomalies (e.g., lasting ≥30 s) trigger alerts to reduce false positives.  
+- All anomalies are stored in **InfluxDB** under the measurement `anomalies`.  
+- Grafana’s **Heart Rate Anomaly Logs** table visualizes these events with color-coded alert types.
+
+** influx data format **
+```python
+    Point("anomalies")
+    .tag("user_id", "user_5577150313")
+    .tag("anomaly_type", event["anomaly_type"]) # Tachycardia,Bradycardia,Spike,Drop,Variability Anomaly    
+    .field("message", event["message"])
+    .field("score", event["score"])
+    .time(event["timestamp"])
+```
