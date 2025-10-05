@@ -52,34 +52,48 @@ class RabbitMQConsumer:
             def callback(ch, method, properties, body):
 
                 # apply state transition logic with on_message func
-                events = self.on_message(ch, method, properties, body)
+                representation_model_dict = self.on_message(ch, method, properties, body)
+
+                signal = representation_model_dict["signals"]
+
+                point = (
+                    Point("user_health")
+                    .tag("user_id", "user_5577150313")
+                    .field("heart_rate", float(signal["heart_rate"]))
+                    .field("calories", float(signal["calories"] ))
+                    .field("steps", float(signal["steps"]))
+                    .field("sleep", int(signal["sleep"]))
+                    .field("heart_rate_status", int(signal["heart_rate_status"]))
+                    .field("intensities", int(signal["intensities"]))
+                    .time(representation_model_dict["timestamp"])
+                )
 
                 # data persistence with influxDB
-                for event in events:
+                # for event in events:
+                #
+                #     signal = str(event["signal"])
+                #     value = event["value"]
+                #
+                #     point = (
+                #         Point("health_statics")
+                #         .tag("user_id", "user_5577150313")
+                #         .tag("type", str(event["type"]))
+                #         .tag("signal", signal)
+                #         .field("past_time", event["timestamp"])
+                #         .time(event["timestamp"])
+                #     )
+                #
+                #     # set correct field type
+                #     if signal in ["heart_rate", "calories", "steps"]:
+                #         point = point.field("value", float(value))
+                #     elif signal in ["sleep", "heart_rate_status", "intensities"]:
+                #         point = point.field("int_value", int(value))
+                try:
+                    client.write(point)
+                    print(f"Written to influxDB: {representation_model_dict}")
 
-                    signal = str(event["signal"])
-                    value = event["value"]
-
-                    point = (
-                        Point("health_statics")
-                        .tag("user_id", "user_5577150313")
-                        .tag("type", str(event["type"]))
-                        .tag("signal", signal)
-                        .field("past_time", event["timestamp"])
-                        .time(event["timestamp"])
-                    )
-
-                    # set correct field type
-                    if signal in ["heart_rate", "calories", "steps"]:
-                        point = point.field("value", float(value))
-                    elif signal in ["sleep", "heart_rate_status", "intensities"]:
-                        point = point.field("int_value", int(value))
-                    try:
-                        client.write(point)
-                        print(f"Written to influxDB: {event}")
-
-                    except InfluxDBError as e:
-                        print(f"Error writing to InfluxDB: {e}")
+                except InfluxDBError as e:
+                    print(f"Error writing to InfluxDB: {e}")
             return callback
         
         for queue in settings.QUEUES:
