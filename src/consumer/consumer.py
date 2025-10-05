@@ -66,7 +66,7 @@ class RabbitMQConsumer:
                         .tag("type", str(event["type"]))
                         .tag("signal", signal)
                         .field("past_time", event["timestamp"])
-                        .time(datetime.datetime.utcnow())
+                        .time(event["timestamp"])
                     )
 
                     # set correct field type
