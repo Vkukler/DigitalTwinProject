@@ -50,12 +50,13 @@ class RabbitMQConsumer:
 
         def make_callback(queue_name):
             def callback(ch, method, properties, body):
-
+                points = []
                 # apply state transition logic with on_message func
                 representation_model_dict = self.on_message(ch, method, properties, body)
 
                 signal = representation_model_dict["signals"]
 
+                # write the user state
                 point = (
                     Point("user_health")
                     .tag("user_id", "user_5577150313")
@@ -67,6 +68,27 @@ class RabbitMQConsumer:
                     .field("intensities", int(signal["intensities"]))
                     .time(representation_model_dict["timestamp"])
                 )
+                points.append(point)
+
+                # add some anomaly events
+                anomaly_events = representation_model_dict["anomaly_events"]
+                if len(anomaly_events)!= 0:
+                    for event in anomaly_events:
+                        points.append(Point("anomalies")
+                                                .tag("user_id", "user_5577150313")
+                                                .tag("anomaly_type", event["anomaly_type"]) # “drops", "rise", ""
+                                                .field("message", event["message"])
+                                                .field("score", event["score"])
+                                                .time(event["timestamp"])
+                                            )
+                # write this to influxDB
+                try:
+                    client.write(points)
+                    print(f"Written to influxDB: {representation_model_dict}")
+
+                except InfluxDBError as e:
+                    print(f"Error writing to InfluxDB: {e}")
+
 
                 # data persistence with influxDB
                 # for event in events:
@@ -88,12 +110,7 @@ class RabbitMQConsumer:
                 #         point = point.field("value", float(value))
                 #     elif signal in ["sleep", "heart_rate_status", "intensities"]:
                 #         point = point.field("int_value", int(value))
-                try:
-                    client.write(point)
-                    print(f"Written to influxDB: {representation_model_dict}")
 
-                except InfluxDBError as e:
-                    print(f"Error writing to InfluxDB: {e}")
             return callback
         
         for queue in settings.QUEUES:

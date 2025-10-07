@@ -2,7 +2,6 @@ import json
 import threading
 from consumer.consumer import RabbitMQConsumer
 from consumer.model.representation_model import RepresentationModel
-from consumer.ai.ai_implementation import heart_rate_anomaly_detection
 
 
 class ConsumerService:
@@ -33,27 +32,27 @@ class ConsumerService:
                 list: the current state of user
         """
         raw_event = json.loads(body)
-        events_to_apply = self._process_event(raw_event)
+        # events_to_apply = self._process_event(raw_event)
 
         with self.lock:
-            self.model.update(events_to_apply)
+            self.model.update(raw_event)
 
-        print(f" [v] Updated state: {self.model.to_dict()}")
+        # print(f" [v] Updated state: {self.model.to_dict()}")
         return self.model.to_dict()
 
-    def _process_event(self, raw_event):
-        """
-            Process an incoming raw event and perform additional logic if required.
-            Args:
-                raw_event (dict): The incoming event parsed from JSON.
-            Returns:
-                list: A list containing the original event and any derived events.
-        """
-        events = [raw_event]
-
-        # If the event is a measurement(from rabbitMq)
-        if raw_event["type"] == "measurement":
-            if raw_event["signal"] == "heart_rate":
-                derived_event = heart_rate_anomaly_detection(raw_event)
-                events.append(derived_event)
-        return events
+    # def _process_event(self, raw_event):
+    #     """
+    #         Process an incoming raw event and perform additional logic if required.
+    #         Args:
+    #             raw_event (dict): The incoming event parsed from JSON.
+    #         Returns:
+    #             list: A list containing the original event and any derived events.
+    #     """
+    #     events = [raw_event]
+    #
+    #     # If the event is a measurement(from rabbitMq)
+    #     if raw_event["type"] == "measurement":
+    #         if raw_event["signal"] == "heart_rate":
+    #             derived_event = heart_rate_anomaly_detection(raw_event)
+    #             events.append(derived_event)
+    #     return events

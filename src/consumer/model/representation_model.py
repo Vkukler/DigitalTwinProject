@@ -1,5 +1,6 @@
 import json
 import datetime
+from .algorithm.classifier import SimpleClassifier
 
 class RepresentationModel:
     def __init__(self, person: str):
@@ -10,6 +11,7 @@ class RepresentationModel:
         """
         self.person = person
         self.timestamp = None
+        self.classifier = SimpleClassifier()
         self.signals = {
             "calories": 0.0,
             "steps": 0.0,
@@ -18,8 +20,9 @@ class RepresentationModel:
             "heart_rate_status": 0,
             "intensities": 0
         }
+        self.detected_events = []
 
-    def update(self, events: list[dict]):
+    def update(self, raw_event: dict):
         '''
         Update the model's internal state based on a list of incoming events.
 
@@ -31,7 +34,10 @@ class RepresentationModel:
                 "type", "signal", "value", and "timestamp".
         '''
 
-        for event in events:
+        # clear previous detected events
+        self.detected_events = []
+
+        for event in self._process_event(raw_event):
             event_ts = datetime.datetime.strptime(event.get("timestamp"), "%Y-%m-%d %H:%M:%S")
 
             # keep the latest timestamp
@@ -42,9 +48,36 @@ class RepresentationModel:
             if event["type"] == "measurement":
                 self.signals[event["signal"]] = event["value"]
 
-            elif event["type"] == "ai":
-                self.signals["heart_rate_status"] = event["value"]
+            elif event["type"] == "anomaly":
+                self.detected_events.append(event)
 
+    def _process_event(self, raw_event):
+        """
+            Process an incoming raw event and perform additional logic if required.
+            Args:
+                raw_event (dict): The incoming event parsed from JSON.
+            Returns:
+                list: A list containing the original event and any derived events.
+        """
+        events = [raw_event]
+
+        # If the event is a measurement(from rabbitMq)
+        if raw_event["type"] == "measurement" and raw_event["signal"] == "heart_rate":
+            hr = raw_event["value"]
+            timestamp = raw_event["timestamp"]
+            anomaly_events = self.classifier.update(hr=hr, timestamp=timestamp)
+
+            # Convert classifier output into standard event dicts
+            for a in anomaly_events:
+                derived_event = {
+                    "type": "anomaly",
+                    "anomaly_type": a["type"],
+                    "score": a.get("score", None),
+                    "message": a["message"],
+                    "timestamp": a["timestamp"],
+                }
+                events.append(derived_event)
+        return events
 
     def to_dict(self):
         '''
@@ -53,17 +86,6 @@ class RepresentationModel:
         return {
             "timestamp": self.timestamp,
             "person": self.person,
-            "signals": self.signals
+            "signals": self.signals,
+            "anomaly_events": self.detected_events[-10:],  # last few anomalies
         }
-
-    # def to_json(self):
-    #     return json.dumps(self.to_dict())
-
-    # @classmethod
-    # def from_json(cls, person: str, data: str):
-    #     """Reconstruct a model from serialized JSON"""
-    #     obj = cls(person)
-    #     state = json.loads(data)
-    #     obj.timestamp = state.get("timestamp")
-    #     obj.signals = state.get("signals", {})
-    #     return obj
