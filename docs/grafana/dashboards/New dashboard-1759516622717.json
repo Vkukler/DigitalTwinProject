@@ -725,7 +725,7 @@
       "pluginVersion": "12.2.0",
       "targets": [
         {
-          "query": "from(bucket: \"health_db\")\n  |> range(start: 0)\n  |> filter(fn: (r) => r[\"_field\"] == \"sleep\")\n  |> aggregateWindow(\n    every: 1d,\n    fn: count,\n    createEmpty: false\n  )\n  |> group()\n  |> map(fn: (r) => ({\n      \"Date\": r._time,\n      \"Total Minutes\": r._value,\n      \"Sleep Duration\": \"${string(v: int(v: float(v: r._value) / 60.0))}h ${string(v: int(v: float(v: r._value) % 60.0))}m\"\n  }))\n",
+          "query": "from(bucket: \"health_db\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"user_health\")\n  |> filter(fn: (r) => r[\"_field\"] == \"sleep\")\n  |> filter(fn: (r) => r._value == 1 or r._value == 2 or r._value == 3)\n  |> aggregateWindow(every: 1m, fn: max, createEmpty: false)\n  |> sum(column: \"_value\")\n  |> map(fn: (r) => ({\n      \"Minutes\": r._value,\n      \"Sleep Duration\": \"${string(v: int(v: float(v: r._value) / 60.0))}h ${string(v: int(v: float(v: r._value) % 60.0))}m\"\n  }))\n",
           "refId": "A"
         }
       ],
@@ -832,7 +832,7 @@
       "pluginVersion": "12.2.0",
       "targets": [
         {
-          "query": " from(bucket: \"health_db\")\n  |> range(start: 0)\n  |> filter(fn: (r) => r[\"_field\"] == \"sleep\")\n  |> aggregateWindow(\n    every: 1d,\n    fn: count,\n    createEmpty: false\n  )\n  |> group()\n  |> map(fn: (r) => ({\n      \"Date\": r._time,\n      \"Total Minutes\": r._value,\n      \"Sleep Duration\": \"${string(v: int(v: float(v: r._value) / 60.0))}h ${string(v: int(v: float(v: r._value) % 60.0))}m\"\n  }))\n",
+          "query": " from(bucket: \"health_db\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"user_health\")\n  |> filter(fn: (r) => r[\"_field\"] == \"sleep\")\n  |> filter(fn: (r) => r._value == 1 or r._value == 2 or r._value == 3)\n  |> aggregateWindow(\n    every: 1d,\n    fn: count,\n    createEmpty: false\n  )\n  |> group()\n  |> map(fn: (r) => ({\n      \"Date\": r._time,\n      \"Total Minutes\": r._value,\n      \"Sleep Duration\": \"${string(v: int(v: float(v: r._value) / 60.0))}h ${string(v: int(v: float(v: r._value) % 60.0))}m\"\n  }))\n",
           "refId": "A"
         }
       ],
