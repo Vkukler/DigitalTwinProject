@@ -10,7 +10,7 @@ SLEEP_CSV_FILE_PATH = BASE_DIR / "data" / "user_5577150313_minuteSleep_preproces
 INTENSITIES_CSV_FILE_PATH = BASE_DIR / "data" / "user_5577150313_minuteIntensitiesNarrow_merged.csv"
 
 # RabbitMq_Setting
-RABBITMQ_HOST = "localhost"
+RABBITMQ_HOST = "localhost" # change local host to this one
 RABBITMQ_PORT = 5672
 RABBITMQ_USER = "admin"
 RABBITMQ_PASSWORD = "admin"

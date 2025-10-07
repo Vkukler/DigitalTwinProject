@@ -20,7 +20,7 @@ class RabbitMQPublisher:
         )
 
         self.connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host=settings.RABBITMQ_HOST,
+            pika.ConnectionParameters(host="rabbitmq", #settings.RABBITMQ_HOST
                                       port=settings.RABBITMQ_PORT,
                                       credentials=credentials
                                       )
