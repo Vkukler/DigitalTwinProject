@@ -60,11 +60,26 @@ The system uses RabbitMQ as the message broker.
    * Python 3.9+
    * Docker (for RabbitMQ)
 
-1. Install dependencies:
+1. Install dependencies for consumer app:
     ```bash
    pip install -r requirements.txt
    ```
-   
+1.1 Cleaning Previous Logs and Docker Resources
+Before starting the container, **make sure** to remove any previously created containers, images, and volumes related to the project.
+
+* Delete previously running containers
+
+* Delete old images (e.g., producer image), otherwise no matter how many times you rebuild the container, it will use the old producer image. 
+  ```bash
+  # check all the images we used, find the producer image, and copy its image_id
+  docker images
+  
+  # remove the image
+  docker rmi <image_id>
+  ```
+* Delete unused volumes(influx, and rabbitmq filefolder) under /docs
+
+
 2. Start Producer container, RabbitMQ, influxDB, and Grafana client (via Docker)
 
     ```bash
