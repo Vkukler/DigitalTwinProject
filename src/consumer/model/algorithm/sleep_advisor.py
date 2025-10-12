@@ -14,7 +14,7 @@ class SleepAdvisor:
 
     def __init__(self):
         # For computing daily RHR during sleep
-        self.hr_buffer = []  # stores HR values during uninterrupted sleep
+        self.hr_buffer = []
         self.hr_buffer_timestamps = []
         self.is_sleeping = False
         self.last_sleep_state = None
@@ -23,9 +23,9 @@ class SleepAdvisor:
         self.daily_rhr_history = {}
         
         # For sleep efficiency calculation
-        self.sleep_period_start = None  # tracks when sleep period begins (after 18:00)
-        self.sleep_minutes = 0  # minutes with sleep score == 1
-        self.total_sleep_minutes = 0  # minutes with sleep score != 0
+        self.sleep_period_start = None 
+        self.sleep_minutes = 0  
+        self.total_sleep_minutes = 0 
         self.current_date = None
         
         # For advice generation
@@ -76,15 +76,15 @@ class SleepAdvisor:
         
         # Update sleep efficiency counters during sleep period
         if self.sleep_period_start is not None:
-            if sleep_value != 0:  # any sleep state
+            if sleep_value != 0: 
                 self.total_sleep_minutes += 1
-            if sleep_value == 1:  # deep/quality sleep
+            if sleep_value == 1: 
                 self.sleep_minutes += 1
         
         # Detect transition from sleep to awake
         if previous_sleep_state and not self.is_sleeping:
             # Check if we have enough HR data to compute daily RHR
-            if len(self.hr_buffer) >= 60:  # at least 60 minutes (6 samples/min * 60)
+            if len(self.hr_buffer) >= 60: 
                 daily_rhr = np.percentile(self.hr_buffer, 10)
                 self.daily_rhr_history[date_str] = daily_rhr
                 print(f"[SleepAdvisor] Computed daily RHR for {date_str}: {daily_rhr:.1f} bpm")

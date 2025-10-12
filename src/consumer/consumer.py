@@ -92,7 +92,7 @@ class RabbitMQConsumer:
                             .tag("recovery_flag", event.get("recovery_flag", "UNKNOWN"))
                             .field("advice", event["advice"])
                             .field("sleep_efficiency", event.get("sleep_efficiency", 0.0) or 0.0)
-                            .time(event["timestamp"].dt.date)
+                            .time(event["timestamp"])
                         )
                         
                         # Only add delta_rhr to InfluxDB
@@ -103,8 +103,7 @@ class RabbitMQConsumer:
                 # write this to influxDB
                 try:
                     client.write(points)
-                    if len(advice_events) != 0:
-                        print(f"Written to influxDB: {representation_model_dict}")
+                    print(f"Written to influxDB: {representation_model_dict}")
 
                 except InfluxDBError as e:
                     print(f"Error writing to InfluxDB: {e}")
