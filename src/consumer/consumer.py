@@ -76,15 +76,35 @@ class RabbitMQConsumer:
                     for event in anomaly_events:
                         points.append(Point("anomalies")
                                                 .tag("user_id", "user_5577150313")
-                                                .tag("anomaly_type", event["anomaly_type"]) # “drops", "rise", ""
+                                                .tag("anomaly_type", event["anomaly_type"]) # "drops", "rise", ""
                                                 .field("message", event["message"])
                                                 .field("score", event["score"])
                                                 .time(event["timestamp"])
                                             )
+                
+                # add advice events
+                advice_events = representation_model_dict.get("advice_events", [])
+                if len(advice_events) != 0:
+                    for event in advice_events:
+                        advice_point = (
+                            Point("advice")
+                            .tag("user_id", "user_5577150313")
+                            .tag("recovery_flag", event.get("recovery_flag", "UNKNOWN"))
+                            .field("advice", event["advice"])
+                            .field("sleep_efficiency", event.get("sleep_efficiency", 0.0) or 0.0)
+                            .time(event["timestamp"].dt.date)
+                        )
+                        
+                        # Only add delta_rhr to InfluxDB
+                        if event.get("delta_rhr") is not None:
+                            advice_point = advice_point.field("delta_rhr", float(event["delta_rhr"]))
+                        points.append(advice_point)
+                
                 # write this to influxDB
                 try:
                     client.write(points)
-                    print(f"Written to influxDB: {representation_model_dict}")
+                    if len(advice_events) != 0:
+                        print(f"Written to influxDB: {representation_model_dict}")
 
                 except InfluxDBError as e:
                     print(f"Error writing to InfluxDB: {e}")

@@ -1,6 +1,7 @@
 import json
 import datetime
 from .algorithm.classifier import SimpleClassifier
+from .algorithm.sleep_advisor import SleepAdvisor
 
 class RepresentationModel:
     def __init__(self, person: str):
@@ -12,6 +13,7 @@ class RepresentationModel:
         self.person = person
         self.timestamp = None
         self.classifier = SimpleClassifier()
+        self.sleep_advisor = SleepAdvisor()
         self.signals = {
             "calories": 0.0,
             "steps": 0.0,
@@ -21,6 +23,7 @@ class RepresentationModel:
             "intensities": 0
         }
         self.detected_events = []
+        self.advice_events = []
 
     def update(self, raw_event: dict):
         '''
@@ -36,6 +39,7 @@ class RepresentationModel:
 
         # clear previous detected events
         self.detected_events = []
+        self.advice_events = []
 
         for event in self._process_event(raw_event):
             event_ts = datetime.datetime.strptime(event.get("timestamp"), "%Y-%m-%d %H:%M:%S")
@@ -50,6 +54,9 @@ class RepresentationModel:
 
             elif event["type"] == "anomaly":
                 self.detected_events.append(event)
+            
+            elif event["type"] == "advice":
+                self.advice_events.append(event)
 
     def _process_event(self, raw_event):
         """
@@ -61,10 +68,12 @@ class RepresentationModel:
         """
         events = [raw_event]
 
-        # If the event is a measurement(from rabbitMq)
+        # Process heart rate measurements
         if raw_event["type"] == "measurement" and raw_event["signal"] == "heart_rate":
             hr = raw_event["value"]
             timestamp = raw_event["timestamp"]
+            
+            # Update classifier for anomaly detection
             anomaly_events = self.classifier.update(hr=hr, timestamp=timestamp)
 
             # Convert classifier output into standard event dicts
@@ -77,6 +86,25 @@ class RepresentationModel:
                     "timestamp": a["timestamp"],
                 }
                 events.append(derived_event)
+            
+            # Update sleep advisor with heart rate
+            self.sleep_advisor.update_heart_rate(hr=hr, timestamp=timestamp)
+        
+        # Process sleep measurements
+        if raw_event["type"] == "measurement" and raw_event["signal"] == "sleep":
+            sleep_value = int(raw_event["value"])
+            timestamp = raw_event["timestamp"]
+            
+            # Update sleep advisor
+            advice_event = self.sleep_advisor.update_sleep(
+                sleep_value=sleep_value, 
+                timestamp=timestamp
+            )
+            
+            # If advice was generated, add it to events
+            if advice_event is not None:
+                events.append(advice_event)
+        
         return events
 
     def to_dict(self):
@@ -88,4 +116,5 @@ class RepresentationModel:
             "person": self.person,
             "signals": self.signals,
             "anomaly_events": self.detected_events[-10:],  # last few anomalies
+            "advice_events": self.advice_events,
         }
