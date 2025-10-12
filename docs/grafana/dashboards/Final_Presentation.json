@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 0,
+  "id": 13,
   "links": [],
   "liveNow": true,
   "panels": [
@@ -150,7 +150,7 @@
       "options": {
         "cellHeight": "md",
         "enablePagination": true,
-        "frameIndex": 1,
+        "frameIndex": 2,
         "showCellBorders": true,
         "showHeader": true,
         "sortBy": [
@@ -232,7 +232,7 @@
           "refId": "A"
         }
       ],
-      "title": "BPM",
+      "title": "Heart rate (BPM)",
       "transformations": [
         {
           "id": "reduce",
@@ -254,7 +254,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic-by-name",
+            "mode": "thresholds",
             "seriesBy": "last"
           },
           "custom": {
@@ -266,8 +266,8 @@
             "barAlignment": 0,
             "barWidthFactor": 0.6,
             "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
+            "fillOpacity": 5,
+            "gradientMode": "scheme",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
@@ -294,13 +294,26 @@
               "mode": "dashed"
             }
           },
+          "displayName": "bpm",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "red",
                 "value": 0
+              },
+              {
+                "color": "green",
+                "value": 40
+              },
+              {
+                "color": "#EAB839",
+                "value": 110
+              },
+              {
+                "color": "red",
+                "value": 120
               }
             ]
           }
@@ -309,104 +322,19 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "calories user_5577150313"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Calories"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
               "options": "heart_rate user_5577150313"
             },
             "properties": [
               {
-                "id": "displayName",
-                "value": "Heart rate"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "sleep user_5577150313"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Sleep"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "intensities user_5577150313"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Intensities"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "steps user_5577150313"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Steps"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Heart rate"
-            },
-            "properties": [
+                "id": "custom.gradientMode",
+                "value": "scheme"
+              },
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "purple",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Sleep"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "blue",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Steps"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "light-red",
-                  "mode": "fixed"
+                  "fixedColor": "green",
+                  "mode": "fixed",
+                  "seriesBy": "last"
                 }
               }
             ]
@@ -419,14 +347,14 @@
         "x": 5,
         "y": 9
       },
-      "id": 1,
+      "id": 10,
       "maxDataPoints": 9999,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": false
         },
         "tooltip": {
           "hideZeros": false,
@@ -441,11 +369,11 @@
             "type": "influxdb",
             "uid": "P951FEA4DE68E13C5"
           },
-          "query": "from(bucket: \"health_db\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._field == \"heart_rate\" or r._field == \"calories\" or r._field == \"sleep\" or r._field == \"intensities\" or r._field == \"steps\")\n\n",
+          "query": "from(bucket: \"health_db\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop )\n  |> filter(fn: (r) => r._field == \"heart_rate\")\n\n",
           "refId": "A"
         }
       ],
-      "title": "All sensors",
+      "title": "Heart rate",
       "type": "timeseries"
     },
     {
@@ -594,8 +522,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds",
-            "seriesBy": "last"
+            "mode": "continuous-GrYlRd"
           },
           "custom": {
             "axisBorderShow": false,
@@ -606,7 +533,7 @@
             "barAlignment": 0,
             "barWidthFactor": 0.6,
             "drawStyle": "line",
-            "fillOpacity": 5,
+            "fillOpacity": 20,
             "gradientMode": "scheme",
             "hideFrom": {
               "legend": false,
@@ -615,10 +542,7 @@
             },
             "insertNulls": false,
             "lineInterpolation": "smooth",
-            "lineStyle": {
-              "fill": "solid"
-            },
-            "lineWidth": 1,
+            "lineWidth": 3,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
@@ -631,55 +555,21 @@
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "dashed"
+              "mode": "off"
             }
           },
-          "displayName": "bpm",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": 0
-              },
-              {
                 "color": "green",
-                "value": 40
-              },
-              {
-                "color": "#EAB839",
-                "value": 110
-              },
-              {
-                "color": "red",
-                "value": 120
+                "value": 0
               }
             ]
           }
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "heart_rate user_5577150313"
-            },
-            "properties": [
-              {
-                "id": "custom.gradientMode",
-                "value": "scheme"
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "green",
-                  "mode": "fixed",
-                  "seriesBy": "last"
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 8,
@@ -687,14 +577,13 @@
         "x": 5,
         "y": 17
       },
-      "id": 10,
-      "maxDataPoints": 9999,
+      "id": 16,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
+          "placement": "right",
+          "showLegend": false
         },
         "tooltip": {
           "hideZeros": false,
@@ -705,15 +594,11 @@
       "pluginVersion": "12.2.0",
       "targets": [
         {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
-          },
-          "query": "from(bucket: \"health_db\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop )\n  |> filter(fn: (r) => r._field == \"heart_rate\")\n\n",
+          "query": "from(bucket: \"health_db\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"user_health\")\n  |> filter(fn: (r) => r[\"_field\"] == \"intensities\")\n  |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
           "refId": "A"
         }
       ],
-      "title": "Heart rate",
+      "title": "Activity Intensity",
       "type": "timeseries"
     },
     {
@@ -825,7 +710,20 @@
           },
           "unit": "dthms"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "time:YYYY-MM-DD"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 9,
@@ -844,7 +742,7 @@
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": false
         },
         "orientation": "auto",
         "showValue": "auto",
@@ -1034,7 +932,7 @@
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": false
         },
         "orientation": "auto",
         "showValue": "auto",
@@ -1148,7 +1046,7 @@
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": false
         },
         "orientation": "auto",
         "showValue": "auto",
@@ -1171,7 +1069,7 @@
           "refId": "A"
         }
       ],
-      "title": "Calories ",
+      "title": "Calories (Kcal)",
       "type": "barchart"
     },
     {
@@ -1182,7 +1080,8 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-GrYlRd"
+            "mode": "palette-classic-by-name",
+            "seriesBy": "last"
           },
           "custom": {
             "axisBorderShow": false,
@@ -1193,8 +1092,8 @@
             "barAlignment": 0,
             "barWidthFactor": 0.6,
             "drawStyle": "line",
-            "fillOpacity": 20,
-            "gradientMode": "scheme",
+            "fillOpacity": 0,
+            "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
@@ -1202,7 +1101,10 @@
             },
             "insertNulls": false,
             "lineInterpolation": "smooth",
-            "lineWidth": 3,
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
@@ -1215,7 +1117,7 @@
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "off"
+              "mode": "dashed"
             }
           },
           "mappings": [],
@@ -1229,21 +1131,152 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "calories user_5577150313"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Calories"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "heart_rate user_5577150313"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Heart rate"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "sleep user_5577150313"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Sleep"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "intensities user_5577150313"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Intensities"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "steps user_5577150313"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Steps"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Heart rate"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Sleep"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Steps"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "Heart rate"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": true,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 8,
+        "h": 10,
         "w": 24,
         "x": 0,
         "y": 54
       },
-      "id": 16,
+      "id": 1,
+      "maxDataPoints": 9999,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "right",
-          "showLegend": false
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "hideZeros": false,
@@ -1254,29 +1287,31 @@
       "pluginVersion": "12.2.0",
       "targets": [
         {
-          "query": "from(bucket: \"health_db\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"user_health\")\n  |> filter(fn: (r) => r[\"_field\"] == \"intensities\")\n  |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "P951FEA4DE68E13C5"
+          },
+          "query": "from(bucket: \"health_db\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._field == \"heart_rate\" or r._field == \"calories\" or r._field == \"sleep\" or r._field == \"intensities\" or r._field == \"steps\")\n\n",
           "refId": "A"
         }
       ],
-      "title": "Activity Intensity",
+      "title": "All sensors",
       "type": "timeseries"
     }
   ],
   "preload": false,
-  "refresh": "2s",
+  "refresh": "5s",
   "schemaVersion": 42,
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "2016-04-01T12:55:07.372Z",
-    "to": "2016-04-02T08:50:34.988Z"
+    "from": "2016-04-01T00:00:00.000Z",
+    "to": "2016-04-10T23:59:59.000Z"
   },
   "timepicker": {
     "refresh_intervals": [
-      "1s",
-      "2s",
       "5s",
       "10s",
       "30s",
@@ -1288,7 +1323,7 @@
     ]
   },
   "timezone": "utc",
-  "title": "Fitbit",
+  "title": "Final Dashboard",
   "uid": "321bc0c3-37b9-43f4-8dd8-e9513e20ee2djn",
-  "version": 24
+  "version": 3
 }
