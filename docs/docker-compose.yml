@@ -74,8 +74,9 @@ services:
     ports:
       - "3000:3000"   
     environment:
-      GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: admin123
+     - GF_DASHBOARDS_MIN_REFRESH_INTERVAL=1s
+     - GF_SECURITY_ADMIN_USER=admin
+     - GF_SECURITY_ADMIN_PASSWORD=admin123
     depends_on:
       - influxdb
     volumes:
