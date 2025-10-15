@@ -38,7 +38,8 @@ class RabbitMQConsumer:
 
         # declare exchange
         self.channel.exchange_declare(exchange=settings.EXCHANGE,
-                                      exchange_type=settings.EXCHANGE_TYPE)
+                                      exchange_type=settings.EXCHANGE_TYPE,
+                                      durable=True)
 
         # declare & bind queues
         for queue in settings.QUEUES:
@@ -46,7 +47,8 @@ class RabbitMQConsumer:
             self.channel.queue_bind(exchange=settings.EXCHANGE,
                                     queue=queue,
                                     routing_key=queue)
-            
+        
+        self.channel.basic_qos(prefetch_count=1)
 
         def make_callback(queue_name):
             def callback(ch, method, properties, body):
@@ -104,9 +106,11 @@ class RabbitMQConsumer:
                 try:
                     client.write(points)
                     print(f"Written to influxDB: {representation_model_dict}")
+                    ch.basic_ack(delivery_tag=method.delivery_tag)
 
                 except InfluxDBError as e:
                     print(f"Error writing to InfluxDB: {e}")
+                    ch.basic_nack(delivery_tag=method.delivery_tag, requeue=True)
 
 
                 # data persistence with influxDB
@@ -136,7 +140,7 @@ class RabbitMQConsumer:
             self.channel.basic_consume(
                 queue=queue,
                 on_message_callback=make_callback(queue),
-                auto_ack= True
+                auto_ack=False
             )
 
     def start(self):

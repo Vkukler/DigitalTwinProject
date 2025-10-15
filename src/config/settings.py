@@ -46,4 +46,3 @@ USER_ID = "user_5577150313"
 
 # Flask
 FLASK_PORT = 5000
-
