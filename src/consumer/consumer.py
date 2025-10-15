@@ -38,8 +38,8 @@ class RabbitMQConsumer:
 
         # declare exchange
         self.channel.exchange_declare(exchange=settings.EXCHANGE,
-                                      exchange_type=settings.EXCHANGE_TYPE,
-                                      durable=True)
+                                      exchange_type=settings.EXCHANGE_TYPE
+                                    )
 
         # declare & bind queues
         for queue in settings.QUEUES:

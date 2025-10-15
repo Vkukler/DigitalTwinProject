@@ -28,7 +28,7 @@ class RabbitMQPublisher:
         self.channel = self.connection.channel()
 
         # declare the exchange and queues
-        self.channel.exchange_declare(exchange=settings.EXCHANGE, exchange_type= settings.EXCHANGE_TYPE, durable=True)
+        self.channel.exchange_declare(exchange=settings.EXCHANGE, exchange_type= settings.EXCHANGE_TYPE)
          # declare the queue
         self.channel.queue_declare(queue = self.queue_name, durable=True)
 

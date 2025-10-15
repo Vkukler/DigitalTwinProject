@@ -33,21 +33,35 @@ The dataset includes outputs from **physical activity, heart rate, and sleep mon
 ### 2. System Architecture Overview
 <img src="figure/sequence_diagram.png" alt="dashboard" width="800"/>
 
-#### 2.1 Producer(replay app)
-The producer module follows a layered design to separate RabbitMQ setup, data handling, and producer orchestration.
- 1. RabbitMQPublisher: Handles all low-level RabbitMQ setup and connectivity, including: 
-    - Declaring exchanges and queues
-    - Binding queues to exchanges
-    - Managing the channel and connection lifecycle
- 2. BaseProducer: Provides a reusable template for producers bound to a specific queue. Defines how to:
-    - Read or generate data
-    - Encode the data (e.g., JSON)
-    - Publish messages to the corresponding queue
- 3. ProducerService: Configures and manages all producers.Responsible for:
-    - Initializing each producer
-    - Starting producer threads or async tasks
-    - Supervising producer execution
-#### 2.2 Consumer
+[//]: # (#### 2.1 Producer&#40;replay app&#41;)
+
+[//]: # (The producer module follows a layered design to separate RabbitMQ setup, data handling, and producer orchestration.)
+
+[//]: # ( 1. RabbitMQPublisher: Handles all low-level RabbitMQ setup and connectivity, including: )
+
+[//]: # (    - Declaring exchanges and queues)
+
+[//]: # (    - Binding queues to exchanges)
+
+[//]: # (    - Managing the channel and connection lifecycle)
+
+[//]: # ( 2. BaseProducer: Provides a reusable template for producers bound to a specific queue. Defines how to:)
+
+[//]: # (    - Read or generate data)
+
+[//]: # (    - Encode the data &#40;e.g., JSON&#41;)
+
+[//]: # (    - Publish messages to the corresponding queue)
+
+[//]: # ( 3. ProducerService: Configures and manages all producers.Responsible for:)
+
+[//]: # (    - Initializing each producer)
+
+[//]: # (    - Starting producer threads or async tasks)
+
+[//]: # (    - Supervising producer execution)
+
+[//]: # (#### 2.2 Consumer)
 
  
 ---
@@ -64,7 +78,8 @@ The system uses RabbitMQ as the message broker.
     ```bash
    pip install -r requirements.txt
    ```
-1.1 Cleaning Previous Logs and Docker Resources
+1.1 Cleaning Previous Logs and Docker Resources [Optional for first time starting]
+
 Before starting the container, **make sure** to remove any previously created containers, images, and volumes related to the project.
 
 * Delete previously running containers
@@ -99,7 +114,7 @@ Before starting the container, **make sure** to remove any previously created co
     * http://localhost:3000
     * enter the username: admin and the password: admin123 (case sensitive)
     * get into the Fitbit dashboard 
-    * choose the latest time frame
+    * choose the time frame between 2016-04-01 and 2016-04-10
    
    <img src="figure/dashboard.png" alt="dashboard" width="400"/>
    
@@ -109,47 +124,70 @@ Before starting the container, **make sure** to remove any previously created co
 * Stop Producer/Consumer: Ctrl + C in their terminal windows.
 
 ---
-### 4. InfluxDB Schema
-Measurement: "Health_statics"
 
-| **Field/Tag** | **Type**    | **Description**                                  | **Example**                                                                               |
-|---------------|-------------|--------------------------------------------------|-------------------------------------------------------------------------------------------|
-| **Tags**      |             |                                                  |                                                                                           |
-| `user_id`     | string      | Unique user identifier                           | `"user_5577150313"`                                                                       |
-| `type`        | string      | Data collection or AI implementation result      | `"measurement"`, `"ai"`                                                                   |
-| `signal`      | string      | Type of signal                                   | `"heart_rate"`, `"calories"`, `"steps"`, `"sleep"`, `"heart_rate_status"`, `"intensities"` |
-| **Fields**    |             |                                                  |                                                                                           |
-| `past_time`   | int (epoch) | Original event timestamp                         | `1459468810`                                                                              |
-| `value`       | float       | Signal value (numeric), type depends on `signal` | heart_rate: `55.0` (float); calories: `1.41` (float); steps: `10` (float);                |
-| `int_value`   | int         |                                                  | sleep: `1` (int); heart_rate_status: `0` / `1` / `2` (int); intensities: `3` (int)        |
-| **Timestamp** |             |                                                  |                                                                                           |
-| `_time`       | timestamp   | InfluxDB write time (`.time(datetime.utcnow())`) | `2025-09-27T13:00:00Z`                                                                    |
+[//]: # (### 4. InfluxDB Schema)
 
-📌 Notes
+[//]: # (Measurement: "Health_db")
 
-0. The 'type' tag:
-   * 'measurement' refers to the data from producer. 
-   * 'ai' refers to the ai implementation results.  
+[//]: # ()
+[//]: # (| **Field/Tag** | **Type**    | **Description**                                  | **Example**                                                                               |)
 
-1. The 'signal' tag differentiates which sensor metric is being recorded.
+[//]: # (|---------------|-------------|--------------------------------------------------|-------------------------------------------------------------------------------------------|)
 
-2. Type of value:
-* float → heart_rate, calories
-* int → steps, sleep, heart_rate_status (0/1/2, stands for different types of abnormality), intensities
+[//]: # (| **Tags**      |             |                                                  |                                                                                           |)
 
-3. past_time preserves the original event time, while _time is the actual write timestamp managed by InfluxDB.
+[//]: # (| `user_id`     | string      | Unique user identifier                           | `"user_5577150313"`                                                                       |)
 
----
+[//]: # (| `type`        | string      | Data collection or AI implementation result      | `"measurement"`, `"ai"`                                                                   |)
+
+[//]: # (| `signal`      | string      | Type of signal                                   | `"heart_rate"`, `"calories"`, `"steps"`, `"sleep"`, `"heart_rate_status"`, `"intensities"` |)
+
+[//]: # (| **Fields**    |             |                                                  |                                                                                           |)
+
+[//]: # (| `past_time`   | int &#40;epoch&#41; | Original event timestamp                         | `1459468810`                                                                              |)
+
+[//]: # (| `value`       | float       | Signal value &#40;numeric&#41;, type depends on `signal` | heart_rate: `55.0` &#40;float&#41;; calories: `1.41` &#40;float&#41;; steps: `10` &#40;float&#41;;                |)
+
+[//]: # (| `int_value`   | int         |                                                  | sleep: `1` &#40;int&#41;; heart_rate_status: `0` / `1` / `2` &#40;int&#41;; intensities: `3` &#40;int&#41;        |)
+
+[//]: # (| **Timestamp** |             |                                                  |                                                                                           |)
+
+[//]: # (| `_time`       | timestamp   | InfluxDB write time &#40;`.time&#40;datetime.utcnow&#40;&#41;&#41;`&#41; | `2025-09-27T13:00:00Z`                                                                    |)
+
+[//]: # ()
+[//]: # (📌 Notes)
+
+[//]: # ()
+[//]: # (0. The 'type' tag:)
+
+[//]: # (   * 'measurement' refers to the data from producer. )
+
+[//]: # (   * 'ai' refers to the ai implementation results.  )
+
+[//]: # ()
+[//]: # (1. The 'signal' tag differentiates which sensor metric is being recorded.)
+
+[//]: # ()
+[//]: # (2. Type of value:)
+
+[//]: # (* float → heart_rate, calories)
+
+[//]: # (* int → steps, sleep, heart_rate_status &#40;0/1/2, stands for different types of abnormality&#41;, intensities)
+
+[//]: # ()
+[//]: # (3. past_time preserves the original event time, while _time is the actual write timestamp managed by InfluxDB.)
+
+[//]: # (---)
 
 ### 5. Heart Rate Anomaly Types Summary
 
-| **Anomaly Type** | **Description** | **Detection Logic** | **Severity** | **Typical Cause / Context** | **Alert Color** |
-|------------------|-----------------|---------------------|---------------|------------------------------|----------------|
-| **Tachycardia** | Sustained high heart rate | `heart_rate > 110 bpm` for ≥ 30 seconds | 🔴 High | Intense activity, stress, fever, or cardiovascular strain | Red |
-| **Bradycardia** | Sustained low heart rate | `heart_rate < 50 bpm` for ≥ 30 seconds | 🔵 High | Deep rest, athletic conditioning, or conduction abnormality | Blue |
-| **Spike** | Sudden short-term increase in heart rate | ΔHR > threshold within 5–10 seconds | 🟠 Medium | Rapid movement, emotional shock, or sensor noise | Orange |
-| **Drop** | Sudden short-term decrease in heart rate | ΔHR < −threshold within 5–10 seconds | 🟣 Medium | Rest transition, signal interruption, or poor contact | Purple |
-| **Variability Anomaly** | Heart rate deviates significantly from recent baseline | `|z| > 3` over a 5-minute sliding window (MAD-based z-score) | 🟡 Low | Normal physiological fluctuation or measurement drift | Yellow |
+| **Anomaly Type** | **Description** | **Detection Logic**                                                                                | **Typical Cause / Context** |
+|------------------|-----------------|----------------------------------------------------------------------------------------------------|------------------------------|
+| **Tachycardia** | Sustained high heart rate | `heart_rate > 110 bpm` for ≥ 30 seconds                                                            | Intense activity, stress, fever, or cardiovascular strain |
+| **Bradycardia** | Sustained low heart rate | `heart_rate < 50 bpm` for ≥ 30 seconds                                                             | Deep rest, athletic conditioning, or conduction abnormality |
+| **Spike** | Sudden short-term increase in heart rate | ΔHR > threshold within 5–10 seconds                                                                | Rapid movement, emotional shock, or sensor noise |
+| **Drop** | Sudden short-term decrease in heart rate | ΔHR < −threshold within 5–10 seconds                                                               | Rest transition, signal interruption, or poor contact |
+| **Variability Anomaly** | Heart rate deviates significantly from recent baseline | `\|z                                    \| > 3` over a 5-minute sliding window (MAD-based z-score) | Normal physiological fluctuation or measurement drift |
 
 
 **Notes:**
@@ -160,7 +198,7 @@ Measurement: "Health_statics"
 
 ** influx data format **
 ```python
-    Point("anomalies")
+Point("anomalies")
     .tag("user_id", "user_5577150313")
     .tag("anomaly_type", event["anomaly_type"]) # Tachycardia,Bradycardia,Spike,Drop,Variability Anomaly    
     .field("message", event["message"])
