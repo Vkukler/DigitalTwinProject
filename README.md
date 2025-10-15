@@ -1,6 +1,8 @@
 ## Digital Twin Project
+This project builds a digital twin of the user using physiological data from smart wearables. It provides a dashboard for real-time visualization and monitoring, includes heart rate anomaly detection, and offers sleep advice based on user data. 
 
 <video src="figure/demo.mov" width="600" height="240" controls></video>
+
 
 ### 1. Dataset Selection
 
