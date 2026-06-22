@@ -68,12 +68,12 @@ class SimpleClassifier:
     def detect_spike_or_drop(self) -> Dict[str, Any]:
         """Detect sudden heart rate spikes or drops."""
         values = self.hr_window.get_values()
-        if len(values) < 60:
+        if len(values) < 30:
             return None
 
-        # compare short-term (5s) vs medium-term (60s) averages
+        # compare short-term (50s) vs medium-term (600s) averages
         short_avg = np.mean(values[-5:])
-        medium_avg = np.mean(values[-60:])
+        medium_avg = np.mean(values)
         diff = short_avg - medium_avg
 
         if diff > 15:

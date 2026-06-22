@@ -1,4 +1,6 @@
 import datetime
+import os
+import time
 
 import pika
 import json
@@ -19,6 +21,26 @@ client = InfluxDBClient3(
 
 
 class RabbitMQConsumer:
+    def _connect_with_retry(self, credentials, retries=30, delay=2):
+        host = os.getenv("RABBITMQ_HOST", settings.RABBITMQ_HOST)
+
+        for attempt in range(1, retries + 1):
+            try:
+                connection = pika.BlockingConnection(
+                    pika.ConnectionParameters(
+                        host,
+                        port=settings.RABBITMQ_PORT,
+                        credentials=credentials
+                    )
+                )
+                print("[Consumer] RabbitMQ is ready.")
+                return connection
+            except pika.exceptions.AMQPConnectionError:
+                print(f"[Consumer] RabbitMQ not ready ({attempt}/{retries}), retrying in {delay}s...")
+                time.sleep(delay)
+
+        raise RuntimeError("RabbitMQ did not become ready in time.")
+
     def __init__(self, on_message):
         self.on_message = on_message
 
@@ -27,13 +49,7 @@ class RabbitMQConsumer:
             password=settings.RABBITMQ_PASSWORD
         )
 
-        self.connection = pika.BlockingConnection(
-            pika.ConnectionParameters(
-                settings.RABBITMQ_HOST,
-                port=settings.RABBITMQ_PORT,
-                credentials=credentials
-            )
-        )
+        self.connection = self._connect_with_retry(credentials)
         self.channel = self.connection.channel()
 
         # declare exchange

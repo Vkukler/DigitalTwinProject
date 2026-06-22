@@ -18,12 +18,14 @@ class RabbitMQPublisher:
             username=settings.RABBITMQ_USER,
             password=settings.RABBITMQ_PASSWORD
         )
+        host = os.getenv("RABBITMQ_HOST", settings.RABBITMQ_HOST)
 
         self.connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host="rabbitmq", #settings.RABBITMQ_HOST
-                                      port=settings.RABBITMQ_PORT,
-                                      credentials=credentials
-                                      )
+            pika.ConnectionParameters(
+                host=host,
+                port=settings.RABBITMQ_PORT,
+                credentials=credentials
+            )
         )
         self.channel = self.connection.channel()
 

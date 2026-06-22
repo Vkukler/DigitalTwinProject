@@ -1,3 +1,8 @@
+import os
+import time
+
+import pika
+
 from producer.base_producer import BaseProducer
 from config import settings
 
@@ -38,7 +43,34 @@ class ProducerService:
 
         self.threads = []
 
+    def wait_for_rabbitmq(self, retries=30, delay=2):
+        credentials = pika.PlainCredentials(
+            username=settings.RABBITMQ_USER,
+            password=settings.RABBITMQ_PASSWORD
+        )
+        host = os.getenv("RABBITMQ_HOST", settings.RABBITMQ_HOST)
+
+        for attempt in range(1, retries + 1):
+            try:
+                connection = pika.BlockingConnection(
+                    pika.ConnectionParameters(
+                        host=host,
+                        port=settings.RABBITMQ_PORT,
+                        credentials=credentials
+                    )
+                )
+                connection.close()
+                print("[Replay App] RabbitMQ is ready.")
+                return
+            except pika.exceptions.AMQPConnectionError:
+                print(f"[Replay App] RabbitMQ not ready ({attempt}/{retries}), retrying in {delay}s...")
+                time.sleep(delay)
+
+        raise RuntimeError("RabbitMQ did not become ready in time.")
+
     def start(self):
+        self.wait_for_rabbitmq()
+
         for p in self.producers:
             thread = p.start()
             self.threads.append(thread)

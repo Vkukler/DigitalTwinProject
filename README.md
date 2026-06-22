@@ -97,6 +97,9 @@ Before starting the container, **make sure** to remove any previously created co
   docker rmi <image_id>
   ```
 * Delete unused volumes(influx, and rabbitmq filefolder) under /docs
+   ```bash
+   rm -rf docs/influx && rm -rf docs/rabbitmq
+   ```
 
 
 2. Start Producer container, RabbitMQ, influxDB, and Grafana client (via Docker)
@@ -106,7 +109,7 @@ Before starting the container, **make sure** to remove any previously created co
    ```
 
 3. Running the Apps 
-* Open two terminals in the project root (src/ folder).
+* Open a second terminals in the project root.
   * Consumer Service: Consumes messages from RabbitMQ and exposes REST API endpoints.
     
   ``` bash

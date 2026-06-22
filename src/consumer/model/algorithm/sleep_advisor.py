@@ -87,7 +87,6 @@ class SleepAdvisor:
             if len(self.hr_buffer) >= 60: 
                 daily_rhr = np.percentile(self.hr_buffer, 10)
                 self.daily_rhr_history[date_str] = daily_rhr
-                print(f"[SleepAdvisor] Computed daily RHR for {date_str}: {daily_rhr:.1f} bpm")
             
             # Reset buffer for next sleep period
             self.hr_buffer = []

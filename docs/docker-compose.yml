@@ -65,6 +65,9 @@ services:
         condition: service_healthy   # wait until rabbitmq is running
     environment:
       RABBITMQ_HOST: rabbitmq     # host = service name
+      PRODUCER_STATE_DIR: /app/state
+    volumes:
+      - ./influx/producer_offsets:/app/state
     command: python src/app_producer.py
 
 
