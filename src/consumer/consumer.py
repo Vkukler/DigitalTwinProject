@@ -1,11 +1,13 @@
 import datetime
 import os
 import time
+import urllib.error
+import urllib.request
 
 import pika
 import json
 from config import settings
-from influxdb_client_3 import InfluxDBClient3, InfluxDBError, Point
+from influxdb_client_3 import InfluxDBClient3, Point
 
 
 influxdb_host = settings.INFLUX_HOST
@@ -21,6 +23,23 @@ client = InfluxDBClient3(
 
 
 class RabbitMQConsumer:
+    def _wait_for_influxdb(self, retries=30, delay=2):
+        health_url = f"{settings.INFLUX_HOST.rstrip('/')}/health"
+
+        for attempt in range(1, retries + 1):
+            try:
+                with urllib.request.urlopen(health_url, timeout=2) as response:
+                    if response.status < 500:
+                        print("[Consumer] InfluxDB is ready.")
+                        return
+            except (OSError, urllib.error.URLError):
+                pass
+
+            print("[Consumer] waiting for connection...")
+            time.sleep(delay)
+
+        raise RuntimeError("InfluxDB did not become ready in time.")
+
     def _connect_with_retry(self, credentials, retries=30, delay=2):
         host = os.getenv("RABBITMQ_HOST", settings.RABBITMQ_HOST)
 
@@ -36,13 +55,14 @@ class RabbitMQConsumer:
                 print("[Consumer] RabbitMQ is ready.")
                 return connection
             except pika.exceptions.AMQPConnectionError:
-                print(f"[Consumer] RabbitMQ not ready ({attempt}/{retries}), retrying in {delay}s...")
+                print("[Consumer] waiting for connection...")
                 time.sleep(delay)
 
         raise RuntimeError("RabbitMQ did not become ready in time.")
 
     def __init__(self, on_message):
         self.on_message = on_message
+        self._wait_for_influxdb()
 
         credentials = pika.PlainCredentials(
             username=settings.RABBITMQ_USER,
@@ -124,8 +144,9 @@ class RabbitMQConsumer:
                     print(f"Written to influxDB: {representation_model_dict}")
                     ch.basic_ack(delivery_tag=method.delivery_tag)
 
-                except InfluxDBError as e:
+                except Exception as e:
                     print(f"Error writing to InfluxDB: {e}")
+                    time.sleep(2)
                     ch.basic_nack(delivery_tag=method.delivery_tag, requeue=True)
 
 
